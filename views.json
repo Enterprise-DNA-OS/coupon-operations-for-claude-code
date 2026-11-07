@@ -10,7 +10,14 @@
       },
       {
         "title": "Campaign budgets",
-        "sql": "select * from campaign_budget order by name"
+        "sql": "select name,currency,status,budget_cents,used_cents,remaining_cents from campaign_budget order by name",
+        "columns": [
+          "name",
+          "status",
+          "budget_cents",
+          "used_cents",
+          "remaining_cents"
+        ]
       }
     ]
   },

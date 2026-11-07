@@ -1,24 +1,24 @@
 {
-  "captured_at": "2026-11-07T22:58:05.793Z",
+  "captured_at": "2026-11-07T22:59:30.729Z",
   "synthetic": true,
   "screens": [
     {
       "title": "Offers that need attention",
       "ask": "What needs a decision before the weekend?",
       "command": "npm run coupons -- attention",
-      "output": "campaign         reason          detail                                            \n  ---------------  --------------  --------------------------------------------------\n  Outlet weekend   EXPIRING        Coupon OUTLET500 expires 2026-11-10               \n  Outlet weekend   IMPORTED_RULES  Coupon OUTLET500 needs explicit rule review       \n  Outlet weekend   OFFER_TERMS     Terms or reference-price evidence missing         \n  Outlet weekend   REVIEW_DUE      Campaign review overdue                           \n  Outlet weekend   REVIEW_OWNER    Owner, reviewer or review date missing            \n  Partner welcome  QUIET           Active campaign has no local redemption in 14 days\n  Winter return    EXPIRING        Coupon RETURN10 expires 2026-11-12"
+      "output": "  campaign         reason          detail                                            \n  ---------------  --------------  --------------------------------------------------\n  Outlet weekend   EXPIRING        Coupon OUTLET500 expires 2026-11-10               \n  Outlet weekend   IMPORTED_RULES  Coupon OUTLET500 needs explicit rule review       \n  Outlet weekend   OFFER_TERMS     Terms or reference-price evidence missing         \n  Outlet weekend   REVIEW_DUE      Campaign review overdue                           \n  Outlet weekend   REVIEW_OWNER    Owner, reviewer or review date missing            \n  Partner welcome  QUIET           Active campaign has no local redemption in 14 days\n  Winter return    EXPIRING        Coupon RETURN10 expires 2026-11-12"
     },
     {
       "title": "Campaign discount budgets",
       "ask": "How much of each local discount budget have we used?",
       "command": "npm run coupons -- budget",
-      "output": "name             currency  status  budget amount  used amount  remaining amount  local uses\n  ---------------  --------  ------  -------------  -----------  ----------------  ----------\n  Outlet weekend   AUD       DRAFT   AUD 200.00     AUD 0.00     AUD 200.00        0         \n  Partner welcome  NZD       ACTIVE  NZD 100.00     NZD 5.00     NZD 95.00         1         \n  Winter return    NZD       ACTIVE  NZD 500.00     NZD 8.00     NZD 492.00        1"
+      "output": "  name             currency  status  budget amount  used amount  remaining amount  local uses\n  ---------------  --------  ------  -------------  -----------  ----------------  ----------\n  Outlet weekend   AUD       DRAFT   AUD 200.00     AUD 0.00     AUD 200.00        0         \n  Partner welcome  NZD       ACTIVE  NZD 100.00     NZD 5.00     NZD 95.00         1         \n  Winter return    NZD       ACTIVE  NZD 500.00     NZD 8.00     NZD 492.00        1"
     },
     {
       "title": "Try an order before recording use",
       "ask": "Does this example order qualify for the return offer?",
       "command": "npm run coupons -- quote RETURN10 --order-cents=10000 --currency=NZD --customer=demo-check",
-      "output": "code      eligible  currency  order amount  discount amount  payable amount  reasons\n  --------  --------  --------  ------------  ---------------  --------------  -------\n  RETURN10  true      NZD       NZD 100.00    NZD 10.00        NZD 90.00       None"
+      "output": "  code      eligible  currency  order amount  discount amount  payable amount  reasons\n  --------  --------  --------  ------------  ---------------  --------------  -------\n  RETURN10  true      NZD       NZD 100.00    NZD 10.00        NZD 90.00       None"
     }
   ]
 }
