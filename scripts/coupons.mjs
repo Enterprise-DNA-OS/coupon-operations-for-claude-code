@@ -197,9 +197,18 @@ export async function run(db,cmd,args=[],o={}){
  });
 }
 export function parseArgs(argv){const args=[],options={};for(const x of argv){if(x.startsWith('--')){const i=x.indexOf('=');const key=x.slice(2,i<0?undefined:i);if(Object.hasOwn(options,key))throw Error(`Duplicate flag ${key}`);options[key]=i<0?true:x.slice(i+1);}else args.push(x);}return {command:args.shift()||'help',args,options};}
+export function humanOutput(out) {
+ const format=(rows)=>table(rows,Object.keys(rows[0]||{}).map(key=>({key,label:key.replace(/_cents$/, ' amount').replaceAll('_',' '),width:100,format:(v,r)=>v instanceof Date?v.toISOString():v===null?'':key.endsWith('_cents')?`${r.currency||''} ${(Number(v)/100).toFixed(2)}`.trim():typeof v==='object'?JSON.stringify(v):v})));
+ if(Array.isArray(out))return format(out);
+ if(out && Object.hasOwn(out,'eligible'))return format([{code:out.code,eligible:out.eligible,currency:out.currency,order_cents:out.order_cents,discount_cents:out.discount_cents,payable_cents:out.payable_cents,reasons:out.reasons.join(', ')||'None'}]);
+ const scalar=Object.fromEntries(Object.entries(out||{}).filter(([,v])=>v===null||typeof v!=='object'||v instanceof Date));
+ const blocks=[format(Object.entries(scalar).map(([field,value])=>({field,value})))];
+ for(const [key,value] of Object.entries(out||{}))if(value&&typeof value==='object'&&!(value instanceof Date))blocks.push(key+'\n'+humanOutput(value));
+ return blocks.join('\n\n');
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){
  let db;const json=process.argv.includes('--json');
- try{const a=parseArgs(process.argv.slice(2));db=await getDb();const out=await run(db,a.command,a.args,a.options);if(json)console.log(JSON.stringify(out,null,2));else if(Array.isArray(out)){console.log(table(out,Object.keys(out[0]||{}).map(key=>({key,label:key,width:100,format:v=>v instanceof Date?v.toISOString():typeof v==='object'?JSON.stringify(v):v}))));}else console.log(JSON.stringify(out,null,2));}
+ try{const a=parseArgs(process.argv.slice(2));db=await getDb();const out=await run(db,a.command,a.args,a.options);if(json)console.log(JSON.stringify(out,null,2));else console.log(humanOutput(out));}
  catch(e){console.error(JSON.stringify({error:e.message,...(e.candidates?{candidates:e.candidates}:{}),...(e.decision?{decision:e.decision}:{})}));process.exitCode=1;}
  finally{if(db)await db.close();}
 }

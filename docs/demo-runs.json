@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-11-07T22:55:26.595Z",
+  "captured_at": "2026-11-07T22:58:05.793Z",
   "synthetic": true,
   "screens": [
     {
@@ -12,13 +12,13 @@
       "title": "Campaign discount budgets",
       "ask": "How much of each local discount budget have we used?",
       "command": "npm run coupons -- budget",
-      "output": "name             currency  status  budget_cents  used_cents  remaining_cents  local_uses\n  ---------------  --------  ------  ------------  ----------  ---------------  ----------\n  Outlet weekend   AUD       DRAFT   20000         0           20000            0         \n  Partner welcome  NZD       ACTIVE  10000         500         9500             1         \n  Winter return    NZD       ACTIVE  50000         800         49200            1"
+      "output": "name             currency  status  budget amount  used amount  remaining amount  local uses\n  ---------------  --------  ------  -------------  -----------  ----------------  ----------\n  Outlet weekend   AUD       DRAFT   AUD 200.00     AUD 0.00     AUD 200.00        0         \n  Partner welcome  NZD       ACTIVE  NZD 100.00     NZD 5.00     NZD 95.00         1         \n  Winter return    NZD       ACTIVE  NZD 500.00     NZD 8.00     NZD 492.00        1"
     },
     {
       "title": "Try an order before recording use",
       "ask": "Does this example order qualify for the return offer?",
       "command": "npm run coupons -- quote RETURN10 --order-cents=10000 --currency=NZD --customer=demo-check",
-      "output": "{\n  \"eligible\": true,\n  \"code\": \"RETURN10\",\n  \"order_cents\": 10000,\n  \"currency\": \"NZD\",\n  \"customer_ref\": \"demo-check\",\n  \"discount_cents\": 1000,\n  \"payable_cents\": 9000,\n  \"reasons\": []\n}"
+      "output": "code      eligible  currency  order amount  discount amount  payable amount  reasons\n  --------  --------  --------  ------------  ---------------  --------------  -------\n  RETURN10  true      NZD       NZD 100.00    NZD 10.00        NZD 90.00       None"
     }
   ]
 }
