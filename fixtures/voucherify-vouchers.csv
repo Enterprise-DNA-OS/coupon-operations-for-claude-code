@@ -1,0 +1,3 @@
+code,voucher_type,value,discount_type,campaign,start_date,expiration_date,redemption_quantity,redemption_count,active,validation_rules_id,metadata.channel
+IMPORT15,DISCOUNT_VOUCHER,15,PERCENT,Imported winter,2026-01-01T00:00:00Z,2099-12-31T00:00:00Z,100,3,true,rule-review-required,partner
+IMPORT500,DISCOUNT_VOUCHER,500,AMOUNT,Imported winter,2026-01-01T00:00:00Z,2099-12-31T00:00:00Z,20,2,false,,store

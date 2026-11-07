@@ -1,13 +1,37 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Coupon Operations for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Coupon operations this week",
+    "subtitle": "Local redemption ledger. Reconcile with checkout records.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Attention",
+        "sql": "select * from attention order by campaign,reason"
+      },
+      {
+        "title": "Campaign budgets",
+        "sql": "select * from campaign_budget order by name"
+      }
+    ]
+  },
+  {
+    "name": "expiry",
+    "title": "Coupon expiry and limits",
+    "sections": [
+      {
+        "title": "Codes",
+        "sql": "select code,expires_at,redemption_limit,imported_count,local_uses,remaining_uses from coupon_usage order by expires_at"
+      }
+    ]
+  },
+  {
+    "name": "compliance",
+    "title": "Offer evidence review",
+    "sections": [
+      {
+        "title": "Record findings",
+        "note": "Evidence checks support human review; they do not certify lawful advertising.",
+        "sql": "select name,rule,finding from compliance_findings order by name,rule"
       }
     ]
   }

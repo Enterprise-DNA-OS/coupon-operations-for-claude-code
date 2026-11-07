@@ -1,24 +1,9 @@
-# Why there is no front end
+# Why this starts without a front end
 
-Voucherify is a database with a subscription. The tables underneath it are ordinary: a few entities, a few relationships, a handful of workflows you repeat every week. What you pay for is the layer on top that lets people who do not write SQL get at those tables. Screens, filters, dashboards, forms.
+Coupon operations is a repeated set of questions: which offers expire, which codes have capacity, what did an order qualify for, and what needs a review? The CLI reads and writes those records. Claude Code, Codex, OpenCode or Cursor can run it from a plain-language brief.
 
-That layer used to be the whole product, because talking to a database was hard. It is not hard any more. Open this folder in Claude Code, describe what you want, and it writes the query, runs it, and explains the answer. Ask a question the dashboard never had a chart for and you still get an answer.
+Read-only HTML gives the owner a weekly review, an expiry report, offer terms briefs and redemption statements. Change brand.json once for the business name, logo and colours. Print these files to PDF. They have no editing controls or public customer portal.
 
-## What you gain
+A checkout screen provides immediate customer feedback, access control and a connection to the order system. A mobile scanner makes an in-store code quick to redeem. This base supplies neither. It does not collect orders automatically or provide Voucherify's hosted API, delivery infrastructure, global performance or uptime commitments. Its local quote and redemption commands support a trusted operator and tested business connections built separately. An owner who needs a new screen, scanner or a store connection can have Enterprise DNA build that into their version.
 
-- **Better answers.** A dashboard shows what the vendor decided to chart. Here you ask your own question, in your own words, and get it answered against your own data.
-- **No seats.** Everyone who needs to look can look. The bill does not grow with headcount.
-- **Your data in your Postgres.** Plain tables. Back them up, query them from anything, leave any time. There is no export step because there is nothing to leave.
-- **A process that matches you.** When your way of working changes, you add a command. You do not wait for a feature request to clear.
-
-## What you give up
-
-- **A visual board.** Stages are a table you ask about, not cards you drag.
-- **A phone app.** It runs where Claude Code runs.
-- **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for businesses that want someone to call.
-
-## Who this fits
-
-Small teams who already use Claude Code, or who would rather learn to ask than learn another interface. If your team needs a screen to look at all day, keep Voucherify. If you need the answers more than the screens, this is cheaper, faster and yours.
-
-Installed and run for you: https://enterprisedna.co/omni/instead-of/voucherify
+Use PostgreSQL for a shared deployment. The embedded store is for one local process at a time. No concurrency or availability promises are made for an embedded database opened by several processes. Keep generated reports private: they can include customer references and internal offer evidence.

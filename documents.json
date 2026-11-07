@@ -1,11 +1,41 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "offer-brief",
+    "title": "Private offer terms brief",
+    "for_each": "select id,name from campaigns order by name",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Policy and evidence",
+        "layout": "record",
+        "sql": "select name,currency,status,owner,terms,price_evidence,review_due,min_order_cents,per_customer_limit,budget_cents from campaigns where id=$1"
+      },
+      {
+        "title": "Coupon conditions",
+        "sql": "select code,kind,value,max_discount_cents,starts_at,expires_at,redemption_limit,reviewed_by,review_note from coupons where campaign_id=$1 order by code",
+        "note": "Percent values are basis points: 1000 means 10%. Amount values are minor currency units: 500 means 5.00."
+      },
+      {
+        "title": "Review findings",
+        "sql": "select rule,finding from compliance_findings where campaign_id=$1"
+      }
+    ]
+  },
+  {
+    "name": "redemption-statement",
+    "title": "Local coupon redemption statement",
+    "for_each": "select id,name from campaigns order by name",
+    "file": "name",
+    "sections": [
+      {
+        "title": "Budget",
+        "sql": "select name,currency,budget_cents,used_cents,remaining_cents from campaign_budget where id=$1"
+      },
+      {
+        "title": "Recorded use",
+        "sql": "select c.code,r.order_ref,r.customer_ref,r.currency,r.order_cents,r.discount_cents,r.created_at,exists(select 1 from reversals x where x.redemption_id=r.id) as reversed from redemptions r join coupons c on c.id=r.coupon_id where c.campaign_id=$1 order by r.created_at",
+        "note": "Imported usage is a count only. Financial history and customer attribution before cutover require separate reconciliation."
+      }
     ]
   }
 ]

@@ -1,0 +1,12 @@
+[
+  "Which offers need a decision before the weekend?",
+  "Which campaigns lack offer terms or price evidence?",
+  "Which codes expire within a week or have already expired?",
+  "What discount does this order qualify for?",
+  "Which rule stops this customer using a code again?",
+  "Which campaign is closest to its local discount budget?",
+  "Which active campaign has no local use in two weeks?",
+  "Which recorded orders were reversed?",
+  "What policy applied when this order used a code?",
+  "Who changed an offer and what did they record?"
+]

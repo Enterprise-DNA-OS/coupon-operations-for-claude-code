@@ -1,5 +1,3 @@
-# Slash commands
+# Recurring coupon jobs
 
-One file per recurring job. Each command tells Claude Code exactly which CLI command to run and how to present the result, so the operator never re-explains the job.
-
-Add a command every time the same ask comes twice. Frontmatter needs a `description:` line. The body is the brief.
+Use the matching command file. CLAUDE.md holds the operating rules. There are 28 slash commands and 26 CLI handlers.

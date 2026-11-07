@@ -1,115 +1,127 @@
-<h1 align="center">Coupon Operations for Claude Code</h1>
+# Coupon Operations for Claude Code
 
-<p align="center">
-  <strong>The open-source discount coupon desk that is just a database and Claude Code.</strong>
-</p>
+Own your discount codes, eligibility checks and offer reviews in one database. Review expiring offers, record local coupon use and reverse a cancellation without losing its history.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+## Three ways to own it
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your Voucherify data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=voucherify">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/voucherify?utm_source=github&utm_medium=readme&utm_campaign=voucherify">How it works</a></td>
-  </tr>
-</table>
+- **Do it yourself:** use the free MIT-licensed base with Claude Code, Codex, OpenCode or Cursor. Hosting and agent subscriptions are separate.
+- **We customise it:** Enterprise DNA maps your Voucherify records, adds your exclusions and connects your checkout. Your version can include a web front end or a different stack. One setup fee, then a retainer for ongoing work.
+- **We run it for you:** Omni by Enterprise DNA installs the system, manages backups and access, and maintains your connections and weekly reviews. One setup fee, then a retainer.
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-voucherify">Instead of Voucherify</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+[Book a 30-minute call with Sam](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=voucherify).
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
+## Try it
 
----
+Node 20 or newer. No cloud account or payment system is needed.
 
-## What is this
-
-Coupon Operations for Claude Code does the job you pay Voucherify for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the Voucherify dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays Voucherify per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=voucherify).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
-
-## Quick start
-
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
-
-```bash
-git clone https://github.com/Enterprise-DNA-OS/coupon-operations-for-claude-code.git
-cd coupon-operations-for-claude-code
+```sh
 npm install
+npm test
 npm run demo
+npm run coupons -- attention
+npm run coupons -- budget
+npm run coupons -- quote RETURN10 --order-cents=10000 --currency=NZD --customer=demo-check
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+Everything in the demo is synthetic. It includes an overdue offer review, an unreviewed code, an expired offer and a campaign with no recent activity. Seeding is idempotent and preserves existing edits. For real work, use a fresh DATA_DIR with npm run migrate. DATABASE_URL selects PostgreSQL; otherwise the database is embedded PGlite in .data/db.
 
-### Use it with your own Postgres or Supabase
+## What works
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+The single CLI holds campaigns, discount coupons, source imports, redemptions, reversals and activity. Percentage values use basis points: 1000 means 10%. Fixed amounts, caps, minimum orders and budgets use minor currency units: 500 means 5.00. NZD, AUD, USD, EUR and GBP are supported. No foreign-exchange conversions occur. Percentage discounts round down to the nearest minor unit and are capped by the code and order value.
 
-## The commands
+A quote checks current review evidence, campaign state, code activity, start and expiry, currency, minimum order, lifetime code count, local customer count and local campaign budget. A redemption reruns those checks inside a transaction. Campaign row locks serialize budget and customer-limit decisions on PostgreSQL. A repeated order reference with identical details returns the original decision; changed details fail. A reversal restores local capacity once and retains both records. A reversed order reference cannot be reused for a new redemption.
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+Imported codes stay unreviewed and campaigns stay DRAFT. The original file and all its fields are kept. Review-coupon requires explicit local values and a review note; set-policy records disclosed terms and price evidence. Both put the campaign back in DRAFT. Activate refuses incomplete or overdue reviews. Human review must establish whether imported restrictions fit the supported rules; text presence alone cannot establish that.
 
-| Command | What it does |
-|---|---|
-| `/...` | ... |
+This is a local coupon desk, not the whole hosted Voucherify service. It does not send codes, alter a live checkout, process payments, issue stored-value cards, manage loyalty points or reproduce every vendor validation rule. Checkout connections, product exclusions and customer-facing screens are custom work. The import's prior-use baseline covers each code only; customer limits and financial budgets cover local use after cutover. See the switching guide before carrying over lifetime restrictions. Do not use the same codes in two unconnected systems.
 
-## Instead of Voucherify
+## Import the documented export
 
-<!-- TODO(author): how to bring data across from Voucherify; link docs/replace-voucherify.md -->
-
-## Architecture
-
-```
-coupon-operations-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
+```sh
+npm run coupons -- import voucherify --file=imports/vouchers.csv --currency=NZD --amount-unit=minor --actor=operator --dry-run
+npm run coupons -- import voucherify --file=imports/vouchers.csv --currency=NZD --amount-unit=minor --actor=operator
+npm run coupons -- export --out=exports/coupons-snapshot.json
 ```
 
-## Built for coding agents
+Read [the switching guide](docs/replace-voucherify.md) for the required CSV fields and reconciliation. The four default vendor columns are not enough. An identical file is a no-op; a malformed row, duplicate code or unsupported voucher type rejects the entire file. Existing campaigns are never merged silently. Currency and amount units must be checked by the operator.
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+## Ten questions for your records
 
-## Contributing
+1. Which offers need a decision before the weekend? (`attention`)
+2. Which offers lack disclosed terms or price evidence? (`compliance`)
+3. Which codes expire within a week or have already expired? (`expiry`)
+4. What discount and payable amount does this order qualify for? (`quote`)
+5. Which rule stops this customer using a code again? (`quote`)
+6. Which campaign is closest to its local discount budget? (`budget`)
+7. Which active campaign has no local redemption in two weeks? (`quiet`)
+8. Which recorded orders were reversed? (`redemptions`)
+9. What was the exact policy when an order used a code? (`export`, policy_snapshot)
+10. Who changed an offer and what did they record? (`activity`)
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+These questions all run today. We do not claim the incumbent cannot answer them. The owner's own terms, price evidence and correction history make the analysis useful.
 
-## Want it installed and run for you?
+## Your first hour: ten things to ask for
 
-Enterprise DNA installs Coupon Operations for Claude Code for your business, migrates your Voucherify data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+1. Put our name, logo and colours in brand.json.
+2. Explain the synthetic overdue offer.
+3. Show the codes that expire this week.
+4. Try an eligible order and an order below the minimum.
+5. Create our campaign in a fresh database.
+6. Test an export without saving it.
+7. Reconcile its dates, discounts and baseline counts.
+8. Review our supported rules and the terms people will see.
+9. Draft our offer brief and weekly review.
+10. Add our own evidence field with a tested migration.
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=voucherify)
-- Read more: [enterprisedna.co/omni/instead-of/voucherify](https://enterprisedna.co/omni/instead-of/voucherify?utm_source=github&utm_medium=readme&utm_campaign=voucherify)
+## Recurring jobs
 
-## License
+The commands below live in .claude/commands. Every CLI command supports --json. Use --name=value flags; names match case-insensitively or by a unique id prefix. Ambiguity returns candidates and exits with status 1. Use help for the full argument list.
 
-MIT. Copyright (c) 2026 Enterprise DNA.
+- /campaigns: Read campaigns
+- /coupons: Read coupons
+- /redemptions: Read redemptions
+- /reversals: Read reversals
+- /activity: Read activity
+- /imports: Read imports
+- /attention: Read attention
+- /compliance: Read compliance
+- /expiry: Read expiry
+- /budget: Read budget
+- /quiet: Read quiet
+- /campaign: <name-or-id> Full campaign policy, coupons and budget
+- /add-campaign: --name=name --currency=NZD --actor=name
+- /set-policy: <campaign> --owner=name --terms=text --evidence=text --review-due=YYYY-MM-DD --min-cents=0 --budget-cents=100000 --customer-limit=1 --actor=name (returns to DRAFT)
+- /add-coupon: --campaign=name --code=CODE --kind=PERCENT|AMOUNT --value=1000 --cap-cents=2000 --starts=ISO --expires=ISO --limit=100 --actor=name (unreviewed)
+- /review-coupon: <coupon> --kind=PERCENT|AMOUNT --value=1000 --cap-cents=2000 --starts=ISO --expires=ISO --limit=100 --active=true|false --note=text --actor=name (returns campaign to DRAFT)
+- /activate: <campaign> --actor=name (requires complete current reviews)
+- /pause: <campaign> --reason=text --actor=name
+- /quote: <coupon> --order-cents=10000 --currency=NZD --customer=opaque-id (read-only)
+- /redeem: <coupon> --order-cents=10000 --currency=NZD --customer=opaque-id --order=unique-order --actor=name (local ledger only)
+- /reverse: <redemption-id-or-order> --reason=text --actor=name (local ledger only)
+- /import: voucherify --file=export.csv --currency=NZD --actor=name [--amount-unit=minor|major] [--dry-run]
+- /export: --out=new-file.json (all records and original imports)
+- /weekly-review: Write private review from attention, budget and compliance
+- /draft-offer: <campaign> Write private offer terms and evidence brief
+- /help: Every command supports --json; flags use --name=value
+- /customise: add fields or rules with a migration and tests.
+- /new-view: add a branded read-only report.
+
+26 CLI commands and 28 slash commands.
+
+## Reports and records
+
+npm run view writes three read-only HTML reports: week, expiry and compliance. npm run docs renders offer briefs and redemption statements per campaign. Edit brand.json for the business identity. /new-view adds another report, and /customise writes a migration and updates the CLI and tests. Weekly reviews and offer drafts stay in drafts; nothing sends.
+
+The CLI is for a trusted operator. Actor names are not authentication. Tables enable row-level security and revoke PUBLIC access, but a database owner can bypass protections. Deployment permissions, backup schedules, retention and access controls need a tested design. Imports, redemptions, reversals and activity are append-only through database triggers. Export uses a consistent snapshot and refuses to overwrite files. Keep database-native backups; automatic JSON restore is not provided. Protect generated HTML and source exports as business records.
+
+## Verification
+
+npm test uses temporary storage and exercises every CLI handler, seed and migration idempotency, real command-line output, invalid imports, held rules, currency and expiry failures, minimum orders, use limits, budget limits, repeat requests, reversals, history protection and HTML escaping. The workflow runs Node 20 and 22 on Ubuntu and Windows, plus PostgreSQL 16 against an empty disposable database. A workflow definition is not proof of a successful run; inspect its actual result.
+
+Read [compliance scope](docs/compliance.md), [why no front end](docs/why-no-front-end.md) and [source notes](docs/research.md).
+
+## Licence
+
+MIT. Copyright 2026 Enterprise DNA. Voucherify belongs to its owner. This independent project uses no vendor code or brand assets.
